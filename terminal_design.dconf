@@ -1,0 +1,7 @@
+[/]
+background-color='rgb(24,39,43)'
+default-size-columns=120
+foreground-color='rgb(255,255,255)'
+login-shell=false
+use-theme-colors=false
+visible-name='wk_terminal'
