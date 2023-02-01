@@ -11,3 +11,7 @@ eval "$(ssh-agent -s)" <br />
 ssh-add .ssh/id_ed25519 <br />
 cat .ssh/id_ed25519.pub <br />
 <Enter ssh key-phrase into Github.com> <br />
+
+# Complete setup on a new machine
+
+Clone this repo in ~/ and simply run init.sh as root.
