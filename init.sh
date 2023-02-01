@@ -21,6 +21,34 @@ $ sudo apt install gawk wget git diffstat unzip texinfo gcc build-essential chrp
 python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev xterm
 python3-subunit mesa-common-dev zstd liblz4-tool -y
 
-# Install visual studio code
-dconf load /org/gnome/terminal/legacy/keybindings/ < ~/configuration/keys.dconf
-dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ < ~/configuration/terminal_design.dconf
+# Configure terminal graphics
+dconf load /org/gnome/terminal/legacy/keybindings/ < ~/linux-config-files/keys.dconf
+dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ < ~/linux-config-files/terminal_design.dconf
+
+function addTerminalConfig() {
+    # Add source bash_aliases on .bashrc
+    cat >> ~/.bashrc << EOT
+
+# Add custom terminal settings
+if [ -f ~/.terminal_settings ]; then
+    . ~/.terminal_settings
+fi
+EOT
+
+}
+
+# Copy terminal config to ~/
+cp ~/linux-config-files/.terminal_settings ~/
+
+# Copy .bash_aliases to ~/
+cp ~/linux-config-files/.bash_aliases ~/
+
+# Copy .tmux.conf and .vimrc
+cp ~/linux-config-files/.tmux.conf ~/
+cp ~/linux-config-files/.vimrc ~/
+
+# Add terminal settings to .bash.rc
+addTerminalConfig
+
+# Reload current environment
+source ~/.bashrc
