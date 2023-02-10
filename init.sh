@@ -4,7 +4,7 @@
 # https://www.linuxshelltips.com/export-import-gnome-terminal-profile/
 
 sudo apt update && sudo apt upgrade -y
-sudo apt install tmux vim dconf-editor tree valgrind build-essential manpages-dev clang -y
+sudo apt install tmux vim dconf-editor tree valgrind build-essential manpages-dev clang chromium-browser -y
 
 # Install code:
 sudo apt install wget gpg -y
