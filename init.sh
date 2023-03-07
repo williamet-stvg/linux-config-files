@@ -15,7 +15,6 @@ https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d
 rm -f packages.microsoft.gpg
 sudo apt update -y
 sudo apt install code -y
-sudo snap install hi -y
 
 # Yocto dependencies
 $ sudo apt install gawk wget git diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip
