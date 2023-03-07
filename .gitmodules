@@ -1,0 +1,3 @@
+[submodule "vim-numbertoggle"]
+	path = vim-numbertoggle
+	url = git@github.com:jeffkreeftmeijer/vim-numbertoggle.git
