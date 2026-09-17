@@ -1,4 +1,44 @@
+# gnome-terminal keybindings — NATIVE Ubuntu only.
+#
+# This file is NOT used under WSL. See windows-terminal/settings-fragment.jsonc.
+#
+# Manual load (native only):
+#     dconf load /org/gnome/terminal/legacy/keybindings/ < keys.dconf
+#
+# ---------------------------------------------------------------------------
+# WARNING about the original bindings
+# ---------------------------------------------------------------------------
+# The original file bound:
+#     close-tab='<Ctrl>w'   new-tab='<Ctrl>t'   new-window='<Ctrl>n'
+#
+# The terminal intercepts those before the shell sees them, and all three are
+# readline keys you use constantly in bash:
+#     Ctrl+W  unix-word-rubout  — delete the previous word
+#     Ctrl+T  transpose-chars
+#     Ctrl+N  next-history      — same as the Down arrow
+#
+# Ctrl+W is the one you will miss. The Ctrl+Shift+* variants below are the
+# gnome-terminal defaults and collide with nothing. Keeping them explicit
+# here also documents the intent.
+#
+# If you want the originals back, uncomment the three lines at the bottom
+# and delete the corresponding ones above them.
+ 
 [/]
-close-tab='<Ctrl>w'
-new-tab='<Ctrl>t'
-new-window='<Ctrl>n'
+close-tab='<Primary><Shift>w'
+new-tab='<Primary><Shift>t'
+new-window='<Primary><Shift>n'
+copy='<Primary><Shift>c'
+paste='<Primary><Shift>v'
+find='<Primary><Shift>f'
+next-tab='<Primary>Page_Down'
+prev-tab='<Primary>Page_Up'
+zoom-in='<Primary>plus'
+zoom-out='<Primary>minus'
+zoom-normal='<Primary>0'
+ 
+# --- original bindings (shadow readline — see the warning above) -----------
+# close-tab='<Primary>w'
+# new-tab='<Primary>t'
+# new-window='<Primary>n'
+

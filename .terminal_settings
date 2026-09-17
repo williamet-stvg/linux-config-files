@@ -1,8 +1,95 @@
-## Show current git branch in terminal ##
-
-parse_git_branch() {
-             git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+# shellcheck shell=bash
+#
+# Sourced from ~/.bashrc by the linux-config-files hook.
+# Interactive shells only — bail out early otherwise.
+ 
+case $- in
+    *i*) ;;
+      *) return ;;
+esac
+ 
+# ---------------------------------------------------------------------------
+# git branch in the prompt
+# ---------------------------------------------------------------------------
+# Uses symbolic-ref rather than `git branch | sed`: `git branch` enumerates
+# every local ref, which is noticeably slow in a big repo and you pay it on
+# every single prompt. Falls back to a short SHA when HEAD is detached.
+__git_prompt_branch() {
+    local ref
+    ref=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) && { printf ' (%s)' "$ref"; return; }
+    ref=$(git rev-parse --short HEAD 2>/dev/null)            && { printf ' (%s)' "$ref"; return; }
+    return 0
 }
-export PS1="\u@\h \[\e[32m\]\w \[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ "
+ 
+# ---------------------------------------------------------------------------
+# prompt
+# ---------------------------------------------------------------------------
+# Notes:
+#  * Not exported. PS1 is a shell-local setting; exporting it leaks into
+#    child processes and confuses some scripts.
+#  * Single-quoted so $(...) is evaluated at display time, not once at source
+#    time. Bash re-expands PS1 before every prompt.
+#  * \[ \] wrap the non-printing escapes so bash computes the line width
+#    correctly — without them, long commands wrap in the wrong place.
+#  * \$ (not a literal $) shows # when you are root.
+__prompt_colors=0
+if [ -t 1 ] && [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; then
+    __prompt_colors=1
+fi
+ 
+if [ "$__prompt_colors" -eq 1 ]; then
+    PS1='\u@\h \[\e[32m\]\w\[\e[91m\]$(__git_prompt_branch)\[\e[0m\]\$ '
+else
+    PS1='\u@\h \w$(__git_prompt_branch)\$ '
+fi
+unset __prompt_colors
+ 
+# Collapse very deep paths to the last 3 components.
+PROMPT_DIRTRIM=3
+ 
+# Put user@host:dir in the terminal/tab title (Windows Terminal and
+# gnome-terminal both honour this).
+case "$TERM" in
+    xterm*|rxvt*|screen*|tmux*)
+        PS1='\[\e]0;\u@\h: \w\a\]'"$PS1"
+        ;;
+esac
+ 
+# ---------------------------------------------------------------------------
+# history
+# ---------------------------------------------------------------------------
+HISTSIZE=50000
+HISTFILESIZE=100000
+HISTCONTROL=ignoreboth:erasedups
+HISTTIMEFORMAT='%F %T  '
+shopt -s histappend      # don't clobber history from parallel shells
+shopt -s cmdhist         # keep multi-line commands as one entry
+ 
+# ---------------------------------------------------------------------------
+# shell behaviour
+# ---------------------------------------------------------------------------
+shopt -s checkwinsize    # keep $LINES/$COLUMNS correct after a resize
+shopt -s globstar        # ** matches recursively
+shopt -s autocd 2>/dev/null || true
+shopt -s dirspell cdspell 2>/dev/null || true
+ 
+export EDITOR=vim
+export VISUAL=vim
+export PAGER=less
+export LESS='-R -F -X -i'
+ 
+# ---------------------------------------------------------------------------
+# bash completion
+# ---------------------------------------------------------------------------
+# Ubuntu's default .bashrc enables this, but only if the stock block is still
+# intact. Harmless to guard it here.
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        # shellcheck disable=SC1091
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        # shellcheck disable=SC1091
+        . /etc/bash_completion
+    fi
+fi
 
-## Set custom terminal design ##

@@ -1,0 +1,118 @@
+// Windows Terminal configuration — the WSL replacement for the two .dconf files.
+//
+// WHY: dconf/gnome-terminal does not exist under WSL. There is no
+// gnome-terminal process and no D-Bus session bus, so `dconf load` either
+// errors with "Cannot autolaunch D-Bus without X11 $DISPLAY" or writes into a
+// throwaway bus that evaporates. Your terminal under WSL is Windows Terminal,
+// configured from JSON on the Windows side.
+//
+// HOW TO APPLY
+//   1. Windows Terminal -> Ctrl+, -> "Open JSON file" (bottom-left).
+//   2. Merge the pieces below into the matching top-level keys.
+//      Do NOT replace the whole file — you will lose your other profiles.
+//   3. Save. Windows Terminal reloads live.
+//
+// Path, if you prefer editing it directly:
+//   %LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json
+ 
+{
+  // -----------------------------------------------------------------------
+  // 1. Colour scheme — translated from terminal_design.dconf
+  //      background-color='rgb(24,39,43)'   -> #18272B
+  //      foreground-color='rgb(255,255,255)'-> #FFFFFF
+  //    Add this object to the existing "schemes": [ ... ] array.
+  // -----------------------------------------------------------------------
+  "schemes": [
+    {
+      "name": "wk_terminal",
+ 
+      "background": "#18272B",
+      "foreground": "#FFFFFF",
+      "cursorColor": "#5FAFAF",
+      "selectionBackground": "#2F4247",
+ 
+      "black": "#18272B",
+      "red": "#E05561",
+      "green": "#8CC265",
+      "yellow": "#D18F52",
+      "blue": "#4AA5F0",
+      "purple": "#C162DE",
+      "cyan": "#42B3C2",
+      "white": "#D7DAE0",
+ 
+      "brightBlack": "#5A6B70",
+      "brightRed": "#FF6B77",
+      "brightGreen": "#A5E075",
+      "brightYellow": "#F0A45D",
+      "brightBlue": "#63B8FF",
+      "brightPurple": "#D173E8",
+      "brightCyan": "#5FAFAF",
+      "brightWhite": "#FFFFFF"
+    }
+  ],
+ 
+  // -----------------------------------------------------------------------
+  // 2. Profile defaults — applies to every profile.
+  //    "initialCols": 120 mirrors default-size-columns=120.
+  //    login-shell=false is the Windows Terminal default, so nothing to set.
+  // -----------------------------------------------------------------------
+  "profiles": {
+    "defaults": {
+      "colorScheme": "wk_terminal",
+      "font": {
+        "face": "Cascadia Mono",
+        "size": 11
+      },
+      "padding": "8",
+      "scrollbarState": "visible",
+      "historySize": 50000,
+      "snapOnInput": true,
+      "antialiasingMode": "grayscale"
+    }
+  },
+ 
+  "initialCols": 120,
+  "initialRows": 32,
+  "copyOnSelect": false,
+  "copyFormatting": "none",
+  "wordDelimiters": " /\\()\"'-.,:;<>~!@#$%^&*|+=[]{}~?│",
+ 
+  // -----------------------------------------------------------------------
+  // 3. Key bindings — translated from keys.dconf, with one correction.
+  //
+  //    Your keys.dconf used:
+  //        close-tab='<Ctrl>w'   new-tab='<Ctrl>t'   new-window='<Ctrl>n'
+  //
+  //    Those three all collide with readline bindings you use constantly in
+  //    bash, and the terminal wins, so bash never sees them:
+  //        Ctrl+W  unix-word-rubout   (delete the previous word)
+  //        Ctrl+T  transpose-chars
+  //        Ctrl+N  next-history       (same as Down arrow)
+  //
+  //    Losing Ctrl+W in particular is painful. The Ctrl+Shift+* bindings
+  //    below are Windows Terminal's defaults and collide with nothing.
+  //    If you still want the originals, swap in the commented block.
+  // -----------------------------------------------------------------------
+  "actions": [
+    { "command": { "action": "closeTab" },   "keys": "ctrl+shift+w" },
+    { "command": { "action": "newTab" },     "keys": "ctrl+shift+t" },
+    { "command": { "action": "newWindow" },  "keys": "ctrl+shift+n" },
+ 
+    // Splits, to match the tmux muscle memory.
+    { "command": { "action": "splitPane", "split": "vertical",   "splitMode": "duplicate" }, "keys": "alt+shift+plus" },
+    { "command": { "action": "splitPane", "split": "horizontal", "splitMode": "duplicate" }, "keys": "alt+shift+-" },
+ 
+    { "command": { "action": "copy", "singleLine": false }, "keys": "ctrl+shift+c" },
+    { "command": "paste",                                   "keys": "ctrl+shift+v" },
+    { "command": "find",                                    "keys": "ctrl+shift+f" }
+ 
+    // --- original bindings, if you really want them -----------------------
+    // Uncomment these and delete the three above. You will lose Ctrl+W
+    // word-delete, Ctrl+T and Ctrl+N inside bash.
+    //
+    // { "command": { "action": "closeTab" },  "keys": "ctrl+w" },
+    // { "command": { "action": "newTab" },    "keys": "ctrl+t" },
+    // { "command": { "action": "newWindow" }, "keys": "ctrl+n" }
+  ]
+}
+ 
